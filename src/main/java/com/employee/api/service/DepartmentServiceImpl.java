@@ -1,20 +1,31 @@
 package com.employee.api.service;
 
 import com.employee.api.dto.DepartmentDto;
+import com.employee.api.repository.DepartmentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public class DepartmentServiceImpl  implements DepartmentService{
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class DepartmentServiceImpl implements DepartmentService{
+    private final DepartmentRepository departmentRepository;
+
     @Override
     public DepartmentDto createDepartment(DepartmentDto departmentDto) {
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public DepartmentDto getDepartmentById(Long departmentId) {
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<DepartmentDto> getAllDepartments() {
         return List.of();
