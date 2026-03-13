@@ -1,6 +1,5 @@
-package com.employee.api.advice;
+package com.employee.api.exception.advice;
 
-import com.employee.api.advice.ErrorObject;
 import com.employee.api.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

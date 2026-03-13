@@ -1,4 +1,4 @@
-package com.employee.api.advice;
+package com.employee.api.exception.advice;
 
 import lombok.Data;
 
