@@ -29,7 +29,17 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Transactional(readOnly = true)
     @Override
     public DepartmentDto getDepartmentById(Long departmentId) {
-        return null;
+        /*
+         Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Department is not exists with a given id: " + departmentId)
+        );
+        return DepartmentMapper.mapToDepartmentDto(department);
+         */
+        return departmentRepository.findById(departmentId) //Optional<Department>
+                //.map(department -> DepartmentMapper.mapToDepartmentDto(department))
+                .map(DepartmentMapper::mapToDepartmentDto) //Optional<DepartmentDto)
+                .orElseThrow();
     }
 
     @Transactional(readOnly = true)
