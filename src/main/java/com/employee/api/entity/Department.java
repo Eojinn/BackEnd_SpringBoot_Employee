@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "departments")
+
 public class Department {
 
     @Id
