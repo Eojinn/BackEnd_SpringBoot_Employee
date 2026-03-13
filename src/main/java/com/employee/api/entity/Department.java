@@ -1,32 +1,26 @@
-package com.employee.api.runner;
+package com.employee.api.entity;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "departments")
+public class Department {
 
-@Component
-@Order(1)
-@Slf4j
-public class DatabaseRunner implements ApplicationRunner {
-    @Autowired
-    DataSource dataSource;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        log.info("DataSource 구현객체는 {} ", dataSource.getClass().getName());
+    @Column(name = "department_name", nullable = false)
+    private String departmentName;
 
-        try (Connection connection = dataSource.getConnection()) {
-            DatabaseMetaData metaData = connection.getMetaData();
-            log.info("DB Product Name = {}", metaData.getDatabaseProductName());
-            log.info("DB URL = {}", metaData.getURL());
-            log.info("DB Username = {}", metaData.getUserName());
-        }
-    }
+    @Column(name = "department_description")
+    private String departmentDescription;
 }
