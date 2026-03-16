@@ -1,10 +1,11 @@
-package com.employee.api.service;
+package com.employee.api.service.impl;
 
 import com.employee.api.dto.DepartmentDto;
 import com.employee.api.entity.Department;
 import com.employee.api.exception.ResourceNotFoundException;
 import com.employee.api.mapper.DepartmentMapper;
 import com.employee.api.repository.DepartmentRepository;
+import com.employee.api.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class DepartmentServiceImpl implements DepartmentService{
+public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
 
     @Override
@@ -85,6 +86,10 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Override
     public void deleteDepartment(Long departmentId) {
-
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(getNotFoundExceptionSupplier(
+                        "Department is not exists with a given id:", departmentId)
+                );
+        departmentRepository.delete(department);
     }
 }
