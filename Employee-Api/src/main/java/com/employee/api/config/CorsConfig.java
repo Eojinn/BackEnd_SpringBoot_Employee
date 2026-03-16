@@ -25,7 +25,7 @@ public class CorsConfig {
         configuration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept",
                 "Authorization"));
         // 필요한 메소드만 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         // 특정 경로에만 적용 (예: "/api/**")
