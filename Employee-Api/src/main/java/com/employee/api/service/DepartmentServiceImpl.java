@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 @Transactional
@@ -42,9 +43,16 @@ public class DepartmentServiceImpl implements DepartmentService{
         return departmentRepository.findById(departmentId) //Optional<Department>
                 //.map(department -> DepartmentMapper.mapToDepartmentDto(department))
                 .map(DepartmentMapper::mapToDepartmentDto) //Optional<DepartmentDto)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Department is not exists with a given id: " + departmentId,
-                        HttpStatus.NOT_FOUND));
+                .orElseThrow(getNotFoundExceptionSupplier(
+                        "Department is not exists with a given id: ", departmentId)
+                );
+    }
+
+    //public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier)
+    //Supplier의 추상메서드  T get()
+    private static Supplier<ResourceNotFoundException> getNotFoundExceptionSupplier(String msg,
+                                                                                    Long departmentId) {
+        return () -> new ResourceNotFoundException(msg + departmentId, HttpStatus.NOT_FOUND);
     }
 
     @Transactional(readOnly = true)
@@ -62,16 +70,17 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public DepartmentDto updateDepartment(Long departmentId, DepartmentDto updatedDepartment) {
         Department department = departmentRepository.findById(departmentId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Department is not exists with a given id:"+ departmentId)
+                .orElseThrow(getNotFoundExceptionSupplier(
+                        "Department is not exists with a given id:", departmentId)
                 );
-
+        //setter 호출
         department.setDepartmentName(updatedDepartment.getDepartmentName());
         department.setDepartmentDescription(updatedDepartment.getDepartmentDescription());
 
-        Department savedDepartment = departmentRepository.save(department);
+        //Department savedDepartment = departmentRepository.save(department);
 
-        return DepartmentMapper.mapToDepartmentDto(savedDepartment);
+        //Entity => DTO 로 변환
+        return DepartmentMapper.mapToDepartmentDto(department);
     }
 
     @Override
