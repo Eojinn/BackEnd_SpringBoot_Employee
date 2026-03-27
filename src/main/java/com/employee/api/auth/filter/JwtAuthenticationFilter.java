@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -42,6 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserInfoUserDetailsService userDetailsService;
 
+    // 필터에서 발생한 예외를 @RestControllerAdvice로 위임하기 위한 리졸버
+    // @Qualifier: Spring이 등록한 복합 리졸버(handlerExceptionResolver) 명시적 지정
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver exceptionResolver;
     /**
      * 요청당 한 번 실행되는 JWT 인증 처리 메서드
      *
@@ -66,14 +74,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 // 토큰 만료, 서명 불일치, 형식 오류 등 파싱 실패 → 401 반환 후 필터 체인 중단
                 log.warn("JWT token parsing failed: {}", e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Invalid or expired JWT token\"}");
+                exceptionResolver.resolveException(request, response, null, e);
                 return;
             }
         }
 
-        // username이 추출됐고 아직 SecurityContext에 인증 정보가 없는 경우에만 처리
+        // username이 추출됐고 아직 SecurityContext에 Authentication(인증) 정보가 없는 경우에만 처리
         // (이미 인증된 요청을 중복 처리하지 않기 위한 조건)
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // DB에서 사용자 정보(권한 포함) 로드 — 토큰에 roles가 없으므로 매 요청마다 DB 조회
